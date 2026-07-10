@@ -1,13 +1,13 @@
 import express from 'express';
-import { generateCloneResponse } from '../controllers/chatController.js';
+import { handleChatPrompt } from '../controllers/chatController.js';
 
 const router = express.Router();
 
 /**
  * @route   POST /api/chat
- * @desc    Generate a clone response using the LLM backend
+ * @desc    Send chat prompt messages to Ollama (Llama 3.2:3b) and receive response
  * @access  Public
  */
-router.post('/chat', generateCloneResponse);
+router.post('/chat', handleChatPrompt);
 
 export default router;
