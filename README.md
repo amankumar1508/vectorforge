@@ -1,6 +1,4 @@
-# vectorforge
-
-# 🤖 Digital Clone AI
+# Ditton | AI Digital Clone Workspace 🤖
 
 > **Build your own AI-powered digital clone that learns your texting style from your WhatsApp chat history and generates replies that sound like you.**
 
@@ -8,266 +6,169 @@
 
 ## 📌 Overview
 
-Digital Clone AI is an AI-powered web application that creates a personalized chat assistant by learning from a user's exported WhatsApp conversations.
+**Ditton** is an AI-powered digital clone workspace that creates a personalized chat assistant by analyzing a user's writing patterns from exported WhatsApp conversations. 
 
-Instead of generating generic responses, the application analyzes the user's writing style—including tone, vocabulary, emojis, reply length, punctuation, and communication habits—and generates replies that closely resemble how the user naturally responds.
-
-The application works entirely with a user's own exported WhatsApp chat, making it easy for anyone to create their own digital communication clone.
+Rather than generating generic AI responses, Ditton mimics the user's natural communication habits—including tone, vocabulary, emojis, reply speed, average message length, punctuation, and common phrases. It is designed to assist busy professionals, creators, and teams in drafting replies that feel authentic and uniquely theirs.
 
 ---
 
 ## ✨ Features
 
-* 📂 Upload exported WhatsApp chat (.txt)
-* 🧹 Automatic chat parsing
-* 💬 Incoming message → User reply pair generation
-* 🧠 Writing style analysis
-* 😀 Emoji and expression detection
-* 📊 Communication analytics
-* 🤖 AI-powered personalized reply generation
-* 💻 Local LLM support using Ollama
-* ⚡ Real-time chat interface
-* 👤 Works for any user with their own exported chat history
+* 📂 **Upload exported WhatsApp chats** (`.txt` formats) through a secure endpoint.
+* 🧹 **Style Analysis visualizer** showing tone, punctuation habits, and message lengths.
+* 💬 **Interactive Chat Simulator** with pre-configured personas (Mom, Sarah the Design Lead, Alex, and My Digital Clone).
+* 🧠 **Style Profile dashboard** displaying real-time metrics (Signature Words, Response Speed, Average Msg Length).
+* 🎨 **Premium Glassmorphic Theme**: A modern Zinc/Slate aesthetic with Emerald accents.
+* 🌓 **Responsive Dark & Light modes** matching modern OS-level preferences.
+* 📱 **Drawer Transitions**: Optimized dual-pane layouts for desktop with slide-out details panels on tablet/mobile screens.
+* 🔒 **Local & Private-first**: Designed for local LLM integration (e.g., Llama 3.2 via Ollama) to keep chat data completely secure.
 
 ---
 
-# 🚀 Problem Statement
-
-People spend a significant amount of time replying to repetitive messages.
-
-Digital Clone AI solves this by learning how a person naturally communicates and generating responses in their own writing style.
-
-The goal is not to replace conversations but to assist users by drafting replies that feel authentic and personal.
-
----
-
-# 🎯 Objectives
-
-* Learn a user's communication style.
-* Generate human-like replies.
-* Preserve personality and tone.
-* Work completely on local chat exports.
-* Provide a simple user experience.
-
----
-
-# 🏗️ System Workflow
+## 🏗️ System Workflow
 
 ```text
-User Uploads WhatsApp Chat
+User Uploads WhatsApp Chat (.txt)
             │
             ▼
-      Chat Parser
+      Express Backend
             │
             ▼
-Message Extraction & Cleaning
+   Multer File Storage
             │
             ▼
-Incoming Message → Reply Pair Generation
+ Style Parameter Compiler
             │
             ▼
-Writing Style Analysis
+ Prompt Builder & Local LLM (Llama 3.2 via Ollama)
             │
             ▼
-Prompt Builder
-            │
-            ▼
-Ollama (Llama 3.2)
-            │
-            ▼
-Generated Personalized Reply
-            │
-            ▼
-Chat Interface
+ Ditton Workspace Chat Simulator
 ```
 
 ---
 
-# 🛠️ Tech Stack
+## 🛠️ Tech Stack
 
-## Frontend
+### Frontend
+* **React.js 19**
+* **Vite**
+* **Tailwind CSS v4** (Modern CSS-first framework)
+* **Lucide React** (Vector icons)
 
-* React.js
-* Vite
-* Tailwind CSS
-* Axios
+### Backend
+* **Node.js** & **Express**
+* **Multer** (File upload handling)
+* **Cors** & **Dotenv**
 
-## Backend
-
-* Node.js
-* Express.js
-* Multer
-
-## AI
-
-* Ollama
-* Llama 3.2
-
-## Database
-
-* MongoDB
-
-## Future AI Components
-
-* ChromaDB
-* Embeddings
-* LoRA Fine-Tuning
+### Local AI Integration
+* **Ollama** (Running Llama 3.2 locally)
 
 ---
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```text
-digital-clone-ai/
-
-├── client/
-├── server/
-├── ai/
-├── uploads/
-├── data/
-├── docs/
-└── README.md
+vectorforge/
+├── backend/
+│   ├── config/          # Multer configurations for file uploads
+│   ├── controllers/     # Upload controllers & metadata loggers
+│   ├── routes/          # Express API route configurations
+│   ├── middleware/      # Express error boundary and cors rules
+│   ├── data/            # Local data directories
+│   ├── logs/            # Server runtime logging
+│   └── server.js        # Backend listener entry point
+│
+└── frontend/
+    ├── index.html       # Vite template and HTML entry point
+    ├── package.json     # Frontend dependencies and run scripts
+    ├── src/
+    │   ├── App.jsx      # Root component, layout, and simulation logic
+    │   ├── main.jsx     # React entry script
+    │   ├── index.css    # Tailwind CSS and global style overrides
+    │   ├── mockData.js  # Style profiles and initial message histories
+    │   └── components/
+    │       ├── ChatWindow.jsx    # Messaging panel & input controls
+    │       ├── Sidebar.jsx       # Chat threads & list view
+    │       └── StyleDashboard.jsx # Visualizer for the clone's style markers
 ```
 
 ---
 
-# ⚙️ How It Works
+## ⚙️ Quick Start
 
-### Step 1
+### Prerequisites
+* [Node.js](https://nodejs.org/) (v18+ recommended)
+* [Ollama](https://ollama.ai/) (optional, for running local models)
 
-Upload an exported WhatsApp chat.
+### 1. Set Up the Backend
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+The backend server runs by default on `http://localhost:5000`.
 
-↓
-
-### Step 2
-
-The application parses the chat.
-
-↓
-
-### Step 3
-
-Incoming messages and user replies are extracted.
-
-↓
-
-### Step 4
-
-The system analyzes communication patterns such as:
-
-* Tone
-* Emoji usage
-* Vocabulary
-* Reply length
-* Punctuation
-* Common phrases
-* Formality
-
-↓
-
-### Step 5
-
-A prompt is dynamically built using the extracted style.
-
-↓
-
-### Step 6
-
-The local LLM generates a reply that mimics the user's communication style.
+### 2. Set Up the Frontend
+1. Navigate to the frontend directory:
+   ```bash
+   cd ../frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Boot the Vite development server:
+   ```bash
+   npm run dev
+   ```
+Open the printed URL (typically `http://localhost:5173`) in your browser.
 
 ---
 
-# 📈 Style Analysis
+## 📈 Style Markers Analyzed
 
-The system analyzes:
-
-* Average reply length
-* Frequently used words
-* Emoji usage
-* Greeting style
-* Common phrases
-* Punctuation habits
-* Question frequency
-* Formality level
-* Response patterns
+The workspace parses your files to calculate:
+* **Average Response Speed**: Simulates natural messaging latency.
+* **Emoji Usage Frequency**: Identifies your favorite, signature emojis.
+* **Signature Vocabulary**: Detects key words/phrases you repeat frequently.
+* **Message Length Patterns**: Measures short-to-medium vs long paragraph style habits.
+* **Punctuation & Capitalization rules**: Matches sentence casing and formatting ticks.
 
 ---
 
-# 💬 Example
+## 💬 Chat Simulation Example
 
-### Incoming Message
-
-```
+### Input Message
+```text
 Bro, free tonight?
 ```
 
-### AI Reply
-
+### Generated Ditton Clone Reply
+```text
+literally born ready 🚀 let's check the logs 😂
 ```
-Haan bhai 😂
-```
 
 ---
 
-# 🔒 Privacy
+## 🔒 Privacy & Local-First Philosophy
 
-* Users upload only their own exported chats.
-* No automatic WhatsApp integration.
-* No cloud dependency for AI inference.
-* Chats remain under the user's control.
-* Designed for educational and hackathon purposes.
-
----
-
-# 🚀 Future Enhancements
-
-* Contact-specific personality
-* Email style cloning
-* Multi-language support
-* Voice cloning
-* Response delay simulation
-* Fine-tuned personalized models
-* Vector database retrieval
-* Memory-based conversations
-* Browser extension
-* Mobile application
+* Ditton is built with a local-first design.
+* Uploaded logs are stored and processed locally.
+* Supports local LLM inference via Ollama, preventing your sensitive messages from leaking to third-party APIs.
+* Designed for educational, testing, and workspace assistance.
 
 ---
 
-# 🎯 Target Users
+## 📄 License
 
-* Busy professionals
-* Customer support teams
-* Sales representatives
-* Founders
-* Students
-* Content creators
-* Freelancers
+Developed for educational and hackathon purposes.
 
----
-
-# 💡 Business Value
-
-Digital Clone AI helps users save time by drafting replies that maintain their unique communication style, making conversations faster without losing authenticity.
-
----
-
-# 👥 Team
-
-Hackathon Project
-
-Digital Clone AI Team
-
----
-
-# 📄 License
-
-This project is developed for educational and hackathon purposes.
-
----
-
-# ⭐ Thank You
-
-If you like this project, consider giving it a ⭐ on GitHub.
-
-Happy Coding! 🚀
+⭐ *If you like Ditton, consider giving it a star on GitHub!*
