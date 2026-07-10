@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { mockPersonas } from './mockData';
 import Sidebar from './components/Sidebar';
 import ChatWindow from './components/ChatWindow';
@@ -56,68 +57,43 @@ export default function App() {
     );
 
     // 3. Request LLM response from the backend
-    fetch('http://localhost:5000/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        messages: updatedHistory,
-        styleProfile: activePersona.styleProfile,
-        personaId: activePersonaId
-      })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to generate clone response');
-        return res.json();
-      })
-      .then(data => {
-        const aiMessage = {
-          id: Date.now() + 1,
-          sender: 'them',
-          text: data.text,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          status: 'read'
-        };
-
-        setPersonas((prev) =>
-          prev.map((p) => {
-            if (p.id === activePersonaId) {
-              return {
-                ...p,
-                status: 'online',
-                chatHistory: [...p.chatHistory, aiMessage]
-              };
-            }
-            return p;
-          })
-        );
-      })
-      .catch(err => {
-        console.warn('API call failed, falling back to local simulation:', err.message);
+    if (activePersonaId === 'clone') {
+      if (!activePersona.filename) {
+        // Warn the user that the clone hasn't been trained yet
         setTimeout(() => {
-          let aiText = 'Offline clone response loaded.';
-          const lowerText = text.toLowerCase();
-          if (activePersonaId === 'clone') {
-            if (lowerText.includes('hello') || lowerText.includes('hey') || lowerText.includes('hi')) {
-              aiText = 'hey! literally just looking over some code, what is up? 🚀';
-            } else if (lowerText.includes('how') || lowerText.includes('work')) {
-              aiText = 'it makes total sense, we just load the parser service, compile style markers, and prompt llama 3.2 directly. let\'s go 😂';
-            } else {
-              aiText = 'solid point. awesome. let\'s try compiling the chat files next or check the logs 🔥';
-            }
-          } else if (activePersonaId === 'sarah') {
-            aiText = 'The designs are finalized. I made sure to double-check the spacing and color alignments for accessibility guidelines. 🙏';
-          } else if (activePersonaId === 'mom') {
-            aiText = 'Okay dear!! Take care and drive slowly!! ❤️ Call me when you are home! 😘🌸';
-          } else if (activePersonaId === 'alex') {
-            aiText = 'lgtm, rebase done. test compile ok 👍';
-          }
+          const warningMessage = {
+            id: Date.now() + 1,
+            sender: 'them',
+            text: "⚠️ I haven't been trained on your WhatsApp chat logs yet! Please click the 'Profile' button in the chat header, and upload a chat export (.txt) file to retrieve my speech style.",
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: 'read'
+          };
 
+          setPersonas((prev) =>
+            prev.map((p) => {
+              if (p.id === 'clone') {
+                return {
+                  ...p,
+                  status: 'online',
+                  chatHistory: [...p.chatHistory, warningMessage]
+                };
+              }
+              return p;
+            })
+          );
+        }, 800);
+        return;
+      }
+
+      axios.post('http://localhost:5000/api/reply', {
+        filename: activePersona.filename,
+        newIncomingMessage: text
+      })
+        .then(res => {
           const aiMessage = {
             id: Date.now() + 1,
             sender: 'them',
-            text: aiText,
+            text: res.data.reply,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             status: 'read'
           };
@@ -134,24 +110,85 @@ export default function App() {
               return p;
             })
           );
-        }, 1000);
-      });
+        })
+        .catch(err => {
+          console.warn('API call failed, falling back to local simulation:', err.response?.data?.error || err.message);
+          
+          const errorMsgText = err.response?.data?.error || err.message;
+          const aiMessage = {
+            id: Date.now() + 1,
+            sender: 'them',
+            text: `⚠️ Inference Connection Alert: ${errorMsgText}. Please ensure your local Ollama daemon is active and you have pulled the required model.`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: 'read'
+          };
+
+          setPersonas((prev) =>
+            prev.map((p) => {
+              if (p.id === activePersonaId) {
+                return {
+                  ...p,
+                  status: 'online',
+                  chatHistory: [...p.chatHistory, aiMessage]
+                };
+              }
+              return p;
+            })
+          );
+        });
+    } else {
+      // Mock persona offline fallbacks
+      setTimeout(() => {
+        let aiText = 'Offline simulation reply.';
+        const lowerText = text.toLowerCase();
+        
+        if (activePersonaId === 'sarah') {
+          aiText = 'The designs are finalized. I made sure to double-check the spacing and color alignments for accessibility guidelines. 🙏';
+        } else if (activePersonaId === 'mom') {
+          aiText = 'Okay dear!! Take care and drive slowly!! ❤️ Call me when you are home! 😘🌸';
+        } else if (activePersonaId === 'alex') {
+          aiText = 'lgtm, rebase done. test compile ok 👍';
+        }
+
+        const aiMessage = {
+          id: Date.now() + 1,
+          sender: 'them',
+          text: aiText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: 'read'
+        };
+
+        setPersonas((prev) =>
+          prev.map((p) => {
+            if (p.id === activePersonaId) {
+              return {
+                ...p,
+                status: 'online',
+                chatHistory: [...p.chatHistory, aiMessage]
+              };
+            }
+            return p;
+          })
+        );
+      }, 1000);
+    }
   };
 
-  const handleImportChat = (fileName, parsedStyleProfile) => {
+  const handleImportChat = (fileName, parsedStyleProfile, filenameOnDisk, ownerName) => {
     setPersonas((prev) =>
       prev.map((p) => {
         if (p.id === 'clone') {
           return {
             ...p,
-            name: "My Digital Clone (Retrained)",
+            name: `${ownerName}'s Digital Clone`,
+            filename: filenameOnDisk,
             styleProfile: parsedStyleProfile || p.styleProfile,
             chatHistory: [
               ...p.chatHistory,
               {
                 id: Date.now(),
                 sender: 'them',
-                text: `🤖 Clone re-trained successfully using "${fileName}" export. Accuracy match score upgraded to 99%! Ready to test.`,
+                text: `🤖 retrained successfully as "${ownerName}" using "${fileName}". Let's test my speech style!`,
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 status: 'read'
               }

@@ -144,6 +144,17 @@ export default function ChatWindow({
             </div>
           );
         })}
+        {persona.status === 'typing' && (
+          <div className={`self-start rounded-2xl rounded-tl-xs px-4 py-2.5 shadow-xs border text-xs flex items-center gap-1.5 ${
+            darkMode 
+              ? 'bg-zinc-900 border-zinc-800 text-zinc-300' 
+              : 'bg-white border-slate-100 text-slate-600'
+          }`}>
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
