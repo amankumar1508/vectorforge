@@ -17,35 +17,46 @@ export default function StyleDashboard({ persona, onImportChat, darkMode, onClos
     }
   };
 
-  const processFile = (file) => {
+  const processFile = async (file) => {
     if (!file || !file.name.endsWith('.txt')) {
       alert("Please upload a valid .txt chat export file.");
       return;
     }
 
     setUploadState('loading');
-    setProgress(10);
-    
-    // Simulate WhatsApp chat log parsing steps
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploadState('success');
-          
-          // Add a minor timeout before callback to show success state
-          setTimeout(() => {
-            onImportChat(file.name);
-            setUploadState('idle');
-            setProgress(0);
-          }, 1500);
+    setProgress(15);
 
-          return 100;
-        }
-        // Progression steps
-        return prev + 15;
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData
       });
-    }, 250);
+
+      setProgress(60);
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || 'Upload failed');
+      }
+
+      const data = await response.json();
+      setProgress(100);
+      setUploadState('success');
+
+      setTimeout(() => {
+        onImportChat(file.name, data.styleProfile);
+        setUploadState('idle');
+        setProgress(0);
+      }, 1500);
+    } catch (err) {
+      console.error('File parsing failed:', err);
+      alert(`Failed to parse WhatsApp log: ${err.message}`);
+      setUploadState('idle');
+      setProgress(0);
+    }
   };
 
   const handleDrop = (e) => {

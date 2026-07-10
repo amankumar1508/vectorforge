@@ -36,12 +36,14 @@ export default function App() {
       status: 'read'
     };
 
+    const updatedHistory = [...activePersona.chatHistory, userMessage];
+
     setPersonas((prev) =>
       prev.map((p) => {
         if (p.id === activePersonaId) {
           return {
             ...p,
-            chatHistory: [...p.chatHistory, userMessage]
+            chatHistory: updatedHistory
           };
         }
         return p;
@@ -53,69 +55,97 @@ export default function App() {
       prev.map((p) => (p.id === activePersonaId ? { ...p, status: 'typing' } : p))
     );
 
-    // 3. Simulate Llama 3.2 local model inference after 1.5s
-    setTimeout(() => {
-      let aiText = '';
-      const lowerText = text.toLowerCase();
+    // 3. Request LLM response from the backend
+    fetch('http://localhost:5000/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messages: updatedHistory,
+        styleProfile: activePersona.styleProfile,
+        personaId: activePersonaId
+      })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to generate clone response');
+        return res.json();
+      })
+      .then(data => {
+        const aiMessage = {
+          id: Date.now() + 1,
+          sender: 'them',
+          text: data.text,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: 'read'
+        };
 
-      // Simple keyword matching for high-fidelity responses matching persona style profiles
-      if (activePersonaId === 'clone') {
-        if (lowerText.includes('hello') || lowerText.includes('hey') || lowerText.includes('hi')) {
-          aiText = 'hey! literally just looking over some code, what is up? 🚀';
-        } else if (lowerText.includes('how') || lowerText.includes('work')) {
-          aiText = 'it makes total sense, we just load the parser service, compile style markers, and prompt llama 3.2 directly. let\'s go 😂';
-        } else {
-          aiText = 'solid point. awesome. let\'s try compiling the chat files next or check the logs 🔥';
-        }
-      } else if (activePersonaId === 'sarah') {
-        if (lowerText.includes('figma') || lowerText.includes('design') || lowerText.includes('mock')) {
-          aiText = 'The designs are finalized. I made sure to double-check the spacing and color alignments for accessibility guidelines. 🙏';
-        } else {
-          aiText = 'I received your message. I am currently reviewing the mobile user testing prototypes and will follow up with feedback.';
-        }
-      } else if (activePersonaId === 'mom') {
-        aiText = 'Okay dear!! Take care and drive slowly!! ❤️ Call me when you are home! 😘🌸';
-      } else if (activePersonaId === 'alex') {
-        aiText = 'lgtm, rebase done. test compile ok 👍';
-      }
-
-      const aiMessage = {
-        id: Date.now() + 1,
-        sender: 'them',
-        text: aiText || 'received! Llama 3.2 clone model loaded successfully.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'read'
-      };
-
-      setPersonas((prev) =>
-        prev.map((p) => {
-          if (p.id === activePersonaId) {
-            return {
-              ...p,
-              status: 'online',
-              chatHistory: [...p.chatHistory, aiMessage]
-            };
+        setPersonas((prev) =>
+          prev.map((p) => {
+            if (p.id === activePersonaId) {
+              return {
+                ...p,
+                status: 'online',
+                chatHistory: [...p.chatHistory, aiMessage]
+              };
+            }
+            return p;
+          })
+        );
+      })
+      .catch(err => {
+        console.warn('API call failed, falling back to local simulation:', err.message);
+        setTimeout(() => {
+          let aiText = 'Offline clone response loaded.';
+          const lowerText = text.toLowerCase();
+          if (activePersonaId === 'clone') {
+            if (lowerText.includes('hello') || lowerText.includes('hey') || lowerText.includes('hi')) {
+              aiText = 'hey! literally just looking over some code, what is up? 🚀';
+            } else if (lowerText.includes('how') || lowerText.includes('work')) {
+              aiText = 'it makes total sense, we just load the parser service, compile style markers, and prompt llama 3.2 directly. let\'s go 😂';
+            } else {
+              aiText = 'solid point. awesome. let\'s try compiling the chat files next or check the logs 🔥';
+            }
+          } else if (activePersonaId === 'sarah') {
+            aiText = 'The designs are finalized. I made sure to double-check the spacing and color alignments for accessibility guidelines. 🙏';
+          } else if (activePersonaId === 'mom') {
+            aiText = 'Okay dear!! Take care and drive slowly!! ❤️ Call me when you are home! 😘🌸';
+          } else if (activePersonaId === 'alex') {
+            aiText = 'lgtm, rebase done. test compile ok 👍';
           }
-          return p;
-        })
-      );
-    }, 1500);
+
+          const aiMessage = {
+            id: Date.now() + 1,
+            sender: 'them',
+            text: aiText,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: 'read'
+          };
+
+          setPersonas((prev) =>
+            prev.map((p) => {
+              if (p.id === activePersonaId) {
+                return {
+                  ...p,
+                  status: 'online',
+                  chatHistory: [...p.chatHistory, aiMessage]
+                };
+              }
+              return p;
+            })
+          );
+        }, 1000);
+      });
   };
 
-  const handleImportChat = (fileName) => {
-    // Modify existing clone or add a high accuracy version
+  const handleImportChat = (fileName, parsedStyleProfile) => {
     setPersonas((prev) =>
       prev.map((p) => {
         if (p.id === 'clone') {
           return {
             ...p,
             name: "My Digital Clone (Retrained)",
-            styleProfile: {
-              ...p.styleProfile,
-              matchScore: 99,
-              tone: "Perfect mimicry of Sumit Kumar, fast typing speed, ultra casual",
-              vocabulary: [...p.styleProfile.vocabulary, "rebase", "config", "ditto", "parse"]
-            },
+            styleProfile: parsedStyleProfile || p.styleProfile,
             chatHistory: [
               ...p.chatHistory,
               {
