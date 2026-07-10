@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  --color-whatsapp-dark-bg: #0b141a;
-  --color-whatsapp-dark-sidebar: #111b21;
-  --color-whatsapp-dark-active: #2a3942;
-  --color-whatsapp-dark-bubble-sent: #005c4b;
-  --color-whatsapp-dark-bubble-recv: #202c33;
-  --color-whatsapp-dark-border: #222e35;
-  --color-whatsapp-dark-input: #2a3942;
-  --color-whatsapp-dark-text-primary: #e9edef;
-  --color-whatsapp-dark-text-secondary: #8696a0;
+  --color-whatsapp-dark-bg: #09090b; /* zinc-950 */
+  --color-whatsapp-dark-sidebar: #18181b; /* zinc-900 */
+  --color-whatsapp-dark-active: #27272a; /* zinc-800 */
+  --color-whatsapp-dark-bubble-sent: #059669; /* emerald-600 */
+  --color-whatsapp-dark-bubble-recv: #18181b; /* zinc-900 */
+  --color-whatsapp-dark-border: rgba(255, 255, 255, 0.06); /* zinc-800 border */
+  --color-whatsapp-dark-input: #27272a; /* zinc-800 */
+  --color-whatsapp-dark-text-primary: #f4f4f5; /* zinc-100 */
+  --color-whatsapp-dark-text-secondary: #a1a1aa; /* zinc-400 */
   
-  --color-whatsapp-light-bg: #efeae2;
+  --color-whatsapp-light-bg: #f8fafc; /* slate-50 */
   --color-whatsapp-light-sidebar: #ffffff;
-  --color-whatsapp-light-active: #f0f2f5;
-  --color-whatsapp-light-bubble-sent: #d9fdd3;
+  --color-whatsapp-light-active: #f1f5f9; /* slate-100 */
+  --color-whatsapp-light-bubble-sent: #d1fae5; /* emerald-100 */
   --color-whatsapp-light-bubble-recv: #ffffff;
-  --color-whatsapp-light-border: #e9edef;
-  --color-whatsapp-light-input: #f0f2f5;
-  --color-whatsapp-light-text-primary: #111b21;
-  --color-whatsapp-light-text-secondary: #667781;
+  --color-whatsapp-light-border: #e2e8f0; /* slate-200 */
+  --color-whatsapp-light-input: #f1f5f9; /* slate-100 */
+  --color-whatsapp-light-text-primary: #0f172a; /* slate-900 */
+  --color-whatsapp-light-text-secondary: #64748b; /* slate-500 */
 }
 
 /* Custom Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -33,27 +33,38 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.2);
-  border-radius: 3px;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.4);
+  background: rgba(16, 185, 129, 0.3);
 }
 
-/* WhatsApp Doodle Background Pattern for Chat Window */
+/* Glassmorphism panel styling */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 15, 18, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Subtle background grid pattern (modern replacement of whatsapp doodle) */
 .whatsapp-doodle {
-  background-color: #efeae2;
-  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 0),
-                    radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 0);
-  background-size: 24px 24px;
-  background-position: 0 0, 12px 12px;
+  background-color: #f8fafc;
+  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
 }
 
 .dark .whatsapp-doodle {
-  background-color: #0b141a;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0),
-                    radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
+  background-color: #09090b;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
 }
 
 /* Base resets to fit viewport */
@@ -62,5 +73,12 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Transitions for responsive drawer */
+.drawer-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
