@@ -1,7 +1,5 @@
-- [x] Implement TF-IDF vectorizer and Cosine Similarity mathematical engines (`backend/utils/similarity.js`)
-- [x] Implement query retriever service (`backend/services/retrievalService.js`)
-- [x] Update `backend/services/promptService.js` to dynamically inject retrieved pairs
-- [x] Implement retrieval MVC controller (`backend/controllers/retrievalController.js`)
-- [x] Implement retrieval routing endpoints (`backend/routes/retrievalRoutes.js`)
-- [x] Mount retrieval routes in `backend/server.js`
-- [x] Run validation script verifying topic-based semantic matching and scores
+- [x] Implement AI reply service orchestrator (`backend/services/replyService.js`)
+- [x] Implement reply MVC controller (`backend/controllers/replyController.js`)
+- [x] Implement reply routing endpoints (`backend/routes/replyRoutes.js`)
+- [x] Mount reply routes in `backend/server.js`
+- [x] Run validation script verifying overall request orchestrations and error messages
